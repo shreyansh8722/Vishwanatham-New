@@ -148,10 +148,14 @@ export const Navbar = () => {
             
             {/* Logo Area */}
             <div className="flex-shrink-0 flex items-center gap-3">
-              <button className="md:hidden text-black" onClick={() => setMobileMenuOpen(true)}>
+              <button 
+                className="md:hidden text-black" 
+                onClick={() => setMobileMenuOpen(true)}
+                aria-label="Open menu"
+              >
                 <Menu size={24} />
               </button>
-              <Link to="/">
+              <Link to="/" aria-label="Vishwanatham Home">
                 <BrandLogo className="h-8 md:h-10 w-auto text-[var(--color-primary)]" />
               </Link>
             </div>
@@ -167,7 +171,11 @@ export const Navbar = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.length > 1 && setShowResults(true)}
                 />
-                <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white rounded-full text-gray-500 hover:text-[var(--color-primary)] shadow-sm transition-colors">
+                <button 
+                  type="submit" 
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white rounded-full text-gray-500 hover:text-[var(--color-primary)] shadow-sm transition-colors"
+                  aria-label="Search"
+                >
                   <Search size={18} />
                 </button>
               </form>
@@ -225,25 +233,40 @@ export const Navbar = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-5">
-              <Link to="/consult">
-                <button className="hidden lg:flex items-center gap-2 border border-[var(--color-primary)] text-[var(--color-primary)] px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[var(--color-primary)] hover:text-white transition-all">
-                  <Phone size={14} /> Consult
-                </button>
+              {/* FIXED: Removed nested <button> inside <Link> and applied styles directly to Link */}
+              <Link 
+                to="/consult" 
+                className="hidden lg:flex items-center gap-2 border border-[var(--color-primary)] text-[var(--color-primary)] px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[var(--color-primary)] hover:text-white transition-all"
+                aria-label="Consult with an Astrologer"
+              >
+                <Phone size={14} /> Consult
               </Link>
 
               <div className="flex items-center gap-5 text-gray-800">
                  {/* Mobile Search Icon Trigger */}
-                 <button className="md:hidden" onClick={() => setIsSearchPopupOpen(true)}>
+                 <button 
+                   className="md:hidden" 
+                   onClick={() => setIsSearchPopupOpen(true)}
+                   aria-label="Open search"
+                 >
                    <Search size={22} />
                  </button>
                  
                  {/* LINK TO LOGIN PAGE */}
-                 <Link to="/login" className="hidden md:block hover:text-[var(--color-primary)] transition-colors">
+                 <Link 
+                   to="/login" 
+                   className="hidden md:block hover:text-[var(--color-primary)] transition-colors"
+                   aria-label="Login"
+                 >
                    <User size={22} strokeWidth={1.5} />
                  </Link>
                  
                  {/* Cart Trigger */}
-                 <button onClick={() => setIsCartOpen(true)} className="relative hover:text-[var(--color-primary)] transition-colors">
+                 <button 
+                   onClick={() => setIsCartOpen(true)} 
+                   className="relative hover:text-[var(--color-primary)] transition-colors"
+                   aria-label="View cart"
+                 >
                    <ShoppingBag size={22} strokeWidth={1.5} />
                    {cartItemCount > 0 && (
                      <span className="absolute -top-1.5 -right-1.5 bg-[var(--color-primary)] text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
@@ -341,7 +364,7 @@ export const Navbar = () => {
               <div className="p-6">
                 <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
                   <BrandLogo className="h-8 text-[var(--color-primary)]" />
-                  <button onClick={() => setMobileMenuOpen(false)}><X size={24} /></button>
+                  <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu"><X size={24} /></button>
                 </div>
                 
                 <div className="flex flex-col gap-2">

@@ -14,15 +14,20 @@
     ],
     "headers": [
       {
-        "source": "**",
+        "source": "**/*.@(jpg|jpeg|gif|png|webp|svg)",
         "headers": [
           {
-            "key": "Cross-Origin-Opener-Policy",
-            "value": "same-origin-allow-popups"
-          },
+            "key": "Cache-Control",
+            "value": "max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
           {
-            "key": "Cross-Origin-Embedder-Policy",
-            "value": "unsafe-none"
+            "key": "Cache-Control",
+            "value": "max-age=31536000, immutable"
           }
         ]
       }

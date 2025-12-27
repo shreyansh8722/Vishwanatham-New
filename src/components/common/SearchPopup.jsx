@@ -13,8 +13,6 @@ const SearchPopup = ({ isOpen, onClose }) => {
   // 1. Auto-Focus on Open
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      // Small delay ensures the modal animation is done before focusing
-      // This prevents some "jumpy" behavior on iOS
       setTimeout(() => inputRef.current.focus(), 100);
     }
   }, [isOpen]);
@@ -64,7 +62,11 @@ const SearchPopup = ({ isOpen, onClose }) => {
         {/* Header: Close Button */}
         <div className="flex justify-between items-center mb-6">
           <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Search Store</span>
-          <button onClick={onClose} className="p-2 -mr-2 hover:bg-gray-100 rounded-full transition-colors group">
+          <button 
+            onClick={onClose} 
+            className="p-2 -mr-2 hover:bg-gray-100 rounded-full transition-colors group"
+            aria-label="Close search" // ADDED
+          >
             <X className="w-6 h-6 text-black group-hover:text-[var(--color-primary)] transition-colors" />
           </button>
         </div>
@@ -80,13 +82,13 @@ const SearchPopup = ({ isOpen, onClose }) => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for..."
-              // TEXT-BASE (16px) or TEXT-LG (18px) PREVENTS ZOOM ON IPHONE
               className="w-full bg-transparent border-b-2 border-gray-200 py-3 pl-8 pr-12 text-lg font-heading font-bold outline-none focus:border-black transition-colors placeholder:text-gray-300 text-black"
               autoComplete="off" 
             />
             <button 
               type="submit"
               className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-[var(--color-primary)] transition-colors"
+              aria-label="Submit search" // ADDED
             >
               <ArrowRight className="w-6 h-6" />
             </button>

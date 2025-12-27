@@ -5,61 +5,88 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ffffff" />
+    
+    <meta name="description" content="Vishwanatham offers premium spiritual artifacts, authentic Rudraksha, Gemstones, and Vedic astrology services directly from the holy city of Kashi (Varanasi)." />
+    <meta name="keywords" content="Rudraksha, Varanasi, Kashi, Spiritual Artifacts, Gemstones, Vedic Astrology, Puja Services, Vishwanatham" />
+    
     <title>Vishwanatham - Premium Spiritual Artifacts</title>
+    
+    <link rel="preload" href="/hero1.webp" as="image" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
-      body { margin: 0; padding: 0; background-color: #ffffff; }
-      #root-loader {
+      body { margin: 0; padding: 0; background-color: #ffffff; font-family: 'Inter', sans-serif; }
+      
+      /* --- INSTANT APP SHELL (Skeleton UI) --- */
+      /* This shows a gray layout instantly so the user doesn't see a blank white screen */
+      #app-shell {
         position: fixed;
         inset: 0;
         z-index: 99999;
         background-color: #ffffff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.5s ease-out;
+        transition: opacity 0.3s ease-out;
+        pointer-events: none;
       }
-      .loader-icon {
-        width: 60px;
-        height: 60px;
-        background-color: #D94F04; /* Your Brand Color */
-        color: white;
-        border-radius: 12px;
+      
+      .shell-nav {
+        height: 80px;
+        border-bottom: 1px solid #f3f4f6;
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        padding: 0 5%;
+      }
+      
+      .shell-logo {
+        width: 120px;
+        height: 30px;
+        background-color: #f3f4f6;
+        border-radius: 4px;
+      }
+      
+      .shell-hero {
+        height: 85vh;
+        width: 100%;
+        background-color: #f9fafb;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
         justify-content: center;
-        font-family: 'Crimson Pro', serif;
-        font-size: 36px;
-        font-weight: bold;
-        box-shadow: 0 10px 25px -5px rgba(217, 79, 4, 0.3);
-        animation: pulse 2s infinite;
+        padding-bottom: 80px;
       }
-      .loader-text {
-        margin-top: 16px;
-        font-family: 'Inter', sans-serif;
-        font-size: 12px;
-        letter-spacing: 2px;
-        color: #9CA3AF;
-        text-transform: uppercase;
-        font-weight: 600;
+
+      .shell-btn {
+        width: 160px;
+        height: 48px;
+        border-radius: 9999px;
+        background-color: #e5e7eb;
+        margin: 0 10px;
       }
-      @keyframes pulse {
-        0% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.05); opacity: 0.8; }
-        100% { transform: scale(1); opacity: 1; }
+      
+      /* Subtle Pulse Animation */
+      @keyframes pulse-shell {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+      }
+      .shell-animate {
+        animation: pulse-shell 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
       }
     </style>
   </head>
   <body>
     <div id="root">
-      <div id="root-loader">
-        <div class="loader-icon">V</div>
-        <div class="loader-text">Loading...</div>
+      <div id="app-shell">
+        <div class="shell-nav">
+          <div class="shell-logo shell-animate"></div>
+          <div class="shell-logo shell-animate" style="width: 40px; border-radius: 50%;"></div>
+        </div>
+        <div class="shell-hero">
+           <div class="shell-btn shell-animate"></div>
+           <div class="shell-btn shell-animate"></div>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>

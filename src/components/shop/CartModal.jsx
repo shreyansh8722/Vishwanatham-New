@@ -41,6 +41,7 @@ export const CartModal = () => {
           <button 
             onClick={() => setIsCartOpen(false)}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-black"
+            aria-label="Close cart" // ADDED
           >
             <X className="w-5 h-5" />
           </button>
@@ -84,6 +85,7 @@ export const CartModal = () => {
                     <button 
                       onClick={() => removeFromCart(item.id, item.selectedSize)}
                       className="text-gray-400 hover:text-red-600 transition-colors p-1"
+                      aria-label="Remove item" // ADDED
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -99,6 +101,7 @@ export const CartModal = () => {
                         onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity - 1)}
                         className="px-2 hover:bg-gray-100 text-gray-500 h-full flex items-center transition-colors"
                         disabled={item.quantity <= 1}
+                        aria-label="Decrease quantity" // ADDED
                       >
                         <Minus className="w-3 h-3" />
                       </button>
@@ -106,6 +109,7 @@ export const CartModal = () => {
                       <button 
                         onClick={() => updateQuantity(item.id, item.selectedSize, item.quantity + 1)}
                         className="px-2 hover:bg-gray-100 text-gray-500 h-full flex items-center transition-colors"
+                        aria-label="Increase quantity" // ADDED
                       >
                         <Plus className="w-3 h-3" />
                       </button>

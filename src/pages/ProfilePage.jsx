@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Package, MapPin, LogOut, User, LayoutDashboard, ChevronRight } from 'lucide-react'; // Added LayoutDashboard icon
-import { useNavigate } from 'react-router-dom';
+import { Package, MapPin, LogOut, LayoutDashboard, ChevronRight, Home, ArrowLeft } from 'lucide-react'; // Added Icons
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth'; 
 
 const ProfilePage = () => {
@@ -29,9 +29,30 @@ const ProfilePage = () => {
   const getInitials = (name) => name ? name.charAt(0).toUpperCase() : 'U';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 font-body">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 font-body">
       <div className="container mx-auto max-w-6xl">
         
+        {/* --- NEW: BREADCRUMBS NAVIGATION --- */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+           {/* Breadcrumb Trail: Home > Profile */}
+           <nav className="flex items-center gap-2 text-sm text-gray-500">
+              <Link to="/" className="flex items-center gap-1 hover:text-[var(--color-primary)] transition-colors">
+                <Home size={15} />
+                <span>Home</span>
+              </Link>
+              <ChevronRight size={14} />
+              <span className="font-bold text-black">My Account</span>
+           </nav>
+
+           {/* Explicit Back Button */}
+           <button 
+             onClick={() => navigate('/')} 
+             className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-black transition-colors"
+           >
+             <ArrowLeft size={16} /> Back to Home
+           </button>
+        </div>
+
         {/* Header */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-4">
            <div>

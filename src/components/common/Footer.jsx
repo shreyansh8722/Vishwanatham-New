@@ -33,7 +33,7 @@ export const Footer = () => {
           
           {/* Brand Column */}
           <div className="space-y-6">
-            <Link to="/">
+            <Link to="/" aria-label="Vishwanatham Home">
               {/* Ensure BrandLogo handles 'text-white' or passes color props */}
               <BrandLogo className="text-white h-8 w-auto" /> 
             </Link>

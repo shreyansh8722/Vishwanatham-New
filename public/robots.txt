@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vishwanatham-739fe.web.app/sitemap.xml

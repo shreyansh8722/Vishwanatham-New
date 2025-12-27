@@ -4,12 +4,12 @@ import {
   signOut, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
-  signInWithPopup,       // Added
-  GoogleAuthProvider,    // Added
-  updateProfile          // Added
+  signInWithPopup,
+  GoogleAuthProvider,
+  updateProfile
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore"; 
-import { auth, db } from "../lib/firebase.js"; // <--- FIXED PATH
+import { auth, db } from "../lib/firebase.js"; 
 
 const AuthContext = createContext(null);
 
@@ -42,14 +42,10 @@ export function AuthProvider({ children }) {
   // 1. Email Login
   const login = (email, password) => signInWithEmailAndPassword(auth, email, password);
 
-  // 2. Email Signup (With Name & Firestore)
+  // 2. Email Signup
   const signup = async (email, password, name) => {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Update Profile Name
     await updateProfile(result.user, { displayName: name });
-
-    // Create Firestore Doc
     await setDoc(doc(db, "users", result.user.uid), {
       uid: result.user.uid,
       email: email,
@@ -57,7 +53,6 @@ export function AuthProvider({ children }) {
       role: 'user',
       createdAt: new Date()
     });
-    
     return result;
   };
 
@@ -65,8 +60,6 @@ export function AuthProvider({ children }) {
   const googleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
-    
-    // Check/Create Firestore Doc
     const userDocRef = doc(db, "users", result.user.uid);
     const userDoc = await getDoc(userDocRef);
 
@@ -96,7 +89,8 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {/* FIX: Render children immediately. Do not wait for !loading */}
+      {children}
     </AuthContext.Provider>
   );
 }

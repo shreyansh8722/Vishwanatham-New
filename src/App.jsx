@@ -7,8 +7,11 @@ import Footer from './components/common/Footer';
 import CartModal from './components/shop/CartModal';
 import { AppSkeleton } from './components/skeletons/AppSkeleton';
 
+// OPTIMIZATION: Import Home Page directly so it renders immediately
+// (No "Loading..." or blank screen for the main landing page)
+import Home from './pages/HomePage'; 
+
 // --- LAZY COMPONENTS (Download only when needed) ---
-const Home = lazy(() => import('./pages/HomePage'));
 const ShopPage = lazy(() => import('./pages/ShopPage'));
 const ProductDetailsPage = lazy(() => import('./pages/ProductDetailsPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
@@ -36,10 +39,12 @@ function App() {
       <CartModal />
 
       <main className="flex-grow relative min-h-screen">
-        {/* Shows Skeleton while the next page loads */}
+        {/* Suspense is still needed for the OTHER lazy pages */}
         <Suspense fallback={<AppSkeleton />}>
           <Routes>
+            {/* Home is now rendered instantly without Suspense waiting */}
             <Route path="/" element={<Home />} />
+            
             <Route path="/shop" element={<ShopPage />} />
             <Route path="/product/:id" element={<ProductDetailsPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />

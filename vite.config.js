@@ -1,12 +1,18 @@
 import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
-import tailwindcss from '@tailwindcss/vite' // The V4 Plugin
+import tailwindcss from '@tailwindcss/vite'
+import viteCompression from 'vite-plugin-compression'; // Added Compression
 
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(), // Activate V4
+    tailwindcss(),
+    // COMPRESSION: Gzips your files for smaller downloads
+    viteCompression({
+      algorithm: 'gzip',
+      ext: '.gz',
+    }),
   ],
   resolve: {
     alias: {
@@ -20,9 +26,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Keep React separate (it rarely changes)
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // Keep Firebase separate (it's huge)
           'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
+          // REMOVED 'ui-vendor' to let Vite merge small icon libraries into main chunk for fewer requests
         },
       },
     },
