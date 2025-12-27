@@ -1,71 +1,63 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
-// --- PROVIDERS ---
-import { AuthProvider } from './hooks/useAuth';
-import { CartProvider } from './context/CartContext';
-import { ProductProvider } from './context/ProductContext';
-
-// --- COMPONENTS ---
+// --- EAGER COMPONENTS (Load Instantly) ---
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import CartModal from './components/shop/CartModal';
+import { AppSkeleton } from './components/skeletons/AppSkeleton';
 
-// --- PAGES ---
-import Home from './pages/HomePage';
-import ShopPage from './pages/ShopPage';
-import ProductDetailsPage from './pages/ProductDetailsPage';
-import CheckoutPage from './pages/CheckoutPage';
-import ConsultPage from './pages/ConsultPage';
-import ProfilePage from './pages/ProfilePage';
-import LoginPage from './pages/LoginPage';
-import AdminPage from './pages/AdminPage'; // <--- IMPORT THIS
+// --- LAZY COMPONENTS (Download only when needed) ---
+const Home = lazy(() => import('./pages/HomePage'));
+const ShopPage = lazy(() => import('./pages/ShopPage'));
+const ProductDetailsPage = lazy(() => import('./pages/ProductDetailsPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const ConsultPage = lazy(() => import('./pages/ConsultPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const OrderSuccessPage = lazy(() => import('./pages/OrderSuccessPage'));
+
+// --- ADMIN (Heavy - Never load this for normal users) ---
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 };
 
 function App() {
   return (
-    <AuthProvider>
-      <ProductProvider>
-        <CartProvider>
-          
-          <div className="flex flex-col min-h-screen">
-            <ScrollToTop />
+    <div className="flex flex-col min-h-screen font-sans bg-white text-gray-900">
+      <ScrollToTop />
+      
+      {/* Navbar stays visible during navigation */}
+      <Navbar />
+      <CartModal />
+
+      <main className="flex-grow relative min-h-screen">
+        {/* Shows Skeleton while the next page loads */}
+        <Suspense fallback={<AppSkeleton />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/product/:id" element={<ProductDetailsPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/order-success" element={<OrderSuccessPage />} />
+            <Route path="/consult" element={<ConsultPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login" element={<LoginPage />} />
             
-            <Navbar />
-            <CartModal />
+            {/* Admin Route */}
+            <Route path="/admin/*" element={<AdminPage />} />
+            
+            <Route path="*" element={<div className="p-20 text-center">Page Not Found</div>} />
+          </Routes>
+        </Suspense>
+      </main>
 
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/product/:id" element={<ProductDetailsPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/consult" element={<ConsultPage />} />
-                
-                {/* Auth Routes */}
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/login" element={<LoginPage />} />
-
-                {/* ADMIN ROUTE - CONNECTED */}
-                <Route path="/admin" element={<AdminPage />} />
-                
-                <Route path="*" element={<div>404 Not Found</div>} />
-              </Routes>
-            </main>
-
-            <Footer />
-          </div>
-
-        </CartProvider>
-      </ProductProvider>
-    </AuthProvider>
+      <Footer />
+    </div>
   );
 }
 

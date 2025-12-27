@@ -1,25 +1,67 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Vishwanatham - Premium Spiritual Artifacts</title>
     
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    
-    <meta name="theme-color" content="#FFDE59" />
-    
-    <title>Vishwanatham | Align Your Stars, Adorn Your Soul</title> 
-    
-    <meta name="description" content="India's most trusted source for Lab-Certified Spiritual Wearables & Vedic Guidance. Authentic Rudraksha, Gemstones, and Ancient Wisdom." />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+      body { margin: 0; padding: 0; background-color: #ffffff; }
+      #root-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s ease-out;
+      }
+      .loader-icon {
+        width: 60px;
+        height: 60px;
+        background-color: #D94F04; /* Your Brand Color */
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Crimson Pro', serif;
+        font-size: 36px;
+        font-weight: bold;
+        box-shadow: 0 10px 25px -5px rgba(217, 79, 4, 0.3);
+        animation: pulse 2s infinite;
+      }
+      .loader-text {
+        margin-top: 16px;
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: #9CA3AF;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      @keyframes pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    </style>
   </head>
-  
-  <body class="bg-[#F9F7F2] text-[#2C2C2C] antialiased">
-    <div id="root"></div>
+  <body>
+    <div id="root">
+      <div id="root-loader">
+        <div class="loader-icon">V</div>
+        <div class="loader-text">Loading...</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

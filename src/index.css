@@ -1,4 +1,3 @@
-/* shreyansh8722/vishwanatham/Vishwanatham-8af283c72b7beb617911d6b52bf8d6f8f6a9b4fd/index.css */
 @import "tailwindcss";
 
 @layer utilities {
@@ -8,16 +7,29 @@
     animation: marquee 60s linear infinite;
   }
   
-  /* Premium Glass Effect */
+  /* Premium Glass Effect - Updated for White Background */
   .glass-nav {
-    background: rgba(255, 253, 250, 0.85); /* Warm translucent base */
+    background: rgba(255, 255, 255, 0.9); /* Pure white base */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(231, 229, 228, 0.6);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
   }
 
   .text-shadow-sm {
     text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  /* Custom Scrollbar for products */
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
   }
 }
 
@@ -37,21 +49,21 @@
   --color-primary: #D94F04; 
   --color-primary-dark: #9A3412;
   
-  /* Backgrounds: Warm Ivory & Cream (Paper feel) */
-  --color-bg-body: #FFFCF8;  /* Very subtle warm white */
-  --color-bg-subtle: #FDF6E3; /* Light parchment for sections */
+  /* --- BACKGROUNDS UPDATED (No More Yellow) --- */
+  --color-bg-body: #FFFFFF;  /* Pure White (Matches Skeleton) */
+  --color-bg-subtle: #F9FAFB; /* Cool Gray 50 (Professional) */
   
   /* Text: Warm Charcoal (Softer than pure black) */
-  --color-text-main: #292524;
-  --color-text-muted: #57534E;
+  --color-text-main: #111827; /* Gray 900 */
+  --color-text-muted: #4B5563; /* Gray 600 */
 
   /* Accents */
   --color-gold: #B45309;       /* Antique Gold */
   --color-gold-light: #F59E0B; /* Bright Gold for stars */
 
   /* --- ELEVATION --- */
-  --shadow-card: 0 2px 8px -2px rgba(41, 37, 36, 0.05);
-  --shadow-card-hover: 0 12px 24px -6px rgba(217, 79, 4, 0.15); /* Orange glow on hover */
+  --shadow-card: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 @layer base {
@@ -64,6 +76,6 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     color: var(--color-text-main);
-    letter-spacing: -0.01em; /* Tighter, more elegant headings */
+    letter-spacing: -0.01em; 
   }
 }
