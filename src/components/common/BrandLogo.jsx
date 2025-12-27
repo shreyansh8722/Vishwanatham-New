@@ -7,7 +7,7 @@ const BrandLogo = ({ className, lightMode = false }) => (
       <img 
         src={logo} 
         alt="Vishwanatham Logo" 
-        className="w-25 h-25 md:w-40 md:h-40 object-contain" 
+        className="w-30 h-30 md:w-60 md:h-60 object-contain" 
       />
     </div>
   </div>
