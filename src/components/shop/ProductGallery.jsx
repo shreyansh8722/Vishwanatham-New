@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ZoomIn } from 'lucide-react';
 import { ImageZoomModal } from './ImageZoomModal';
 
 const ProductGallery = ({ images = [] }) => {
@@ -59,7 +59,12 @@ const ProductGallery = ({ images = [] }) => {
                 selectedImage === idx ? 'border-[#B08D55] opacity-100 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
               }`}
             >
-              <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+              <img 
+                src={img} 
+                alt={`Thumb ${idx}`} 
+                className="w-full h-full object-cover" 
+                loading="lazy"
+              />
             </button>
           ))}
         </div>
@@ -78,9 +83,11 @@ const ProductGallery = ({ images = [] }) => {
                <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative">
                  <img 
                    src={img} 
-                   onClick={() => setIsLightboxOpen(true)}
-                   className="w-full h-full object-cover" 
+                   onClick={() => setIsLightboxOpen(true)} // Opens the smooth modal on tap
+                   className="w-full h-full object-cover active:scale-[0.98] transition-transform duration-200" 
                    alt={`View ${idx + 1}`}
+                   loading={idx === 0 ? "eager" : "lazy"} // Performance: Load first image immediately
+                   decoding="async"
                  />
                </div>
              ))}
@@ -106,7 +113,14 @@ const ProductGallery = ({ images = [] }) => {
           onMouseMove={handleMouseMove}
           onClick={() => setIsLightboxOpen(true)}
         >
-          <img src={images[selectedImage]} alt="Main" className="w-full h-full object-cover transition-opacity duration-300" />
+          <img 
+            src={images[selectedImage]} 
+            alt="Main" 
+            className="w-full h-full object-cover transition-opacity duration-300"
+            loading="eager" // Performance: Important for LCP
+          />
+          
+          {/* Lens Zoom Effect */}
           {showZoom && (
             <div 
               className="absolute inset-0 pointer-events-none bg-no-repeat z-10 bg-white"
@@ -120,6 +134,7 @@ const ProductGallery = ({ images = [] }) => {
         </div>
       </div>
 
+      {/* The New Super Smooth Modal */}
       <ImageZoomModal 
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}

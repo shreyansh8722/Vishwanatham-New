@@ -24,6 +24,7 @@
     "framer-motion": "^11.18.2",
     "fuse.js": "^7.1.0",
     "lucide-react": "^0.323.0",
+    "photoswipe": "^5.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-ga4": "^2.1.0",

@@ -1,228 +1,49 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 export const ImageZoomModal = ({ isOpen, onClose, images, initialIndex = 0, onIndexChange }) => {
   const [activeIndex, setActiveIndex] = useState(initialIndex);
-  
-  // Refs for direct DOM manipulation (High Performance)
-  const imgRef = useRef(null); 
-  const containerRef = useRef(null);
-  
-  // Mutable Gesture State
-  const state = useRef({
-    x: 0, y: 0, scale: 1,
-    isPanning: false,
-    startDist: 0, startScale: 1,
-    startX: 0, startY: 0,
-    startPanX: 0, startPanY: 0,
-    pinchCenter: { x: 0, y: 0 }
-  });
+  const [isZoomed, setIsZoomed] = useState(false);
+  const scrollRef = useRef(null);
 
-  const lastTap = useRef(0);
-
-  // Sync state when opening
+  // 1. Sync State & Scroll to Initial Image
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && scrollRef.current) {
+      // Small timeout ensures the DOM is ready for the scroll
+      setTimeout(() => {
+        if (scrollRef.current) {
+          const width = scrollRef.current.offsetWidth;
+          scrollRef.current.scrollLeft = initialIndex * width;
+        }
+      }, 10);
       setActiveIndex(initialIndex);
-      resetZoom(false);
+      setIsZoomed(false);
     }
   }, [isOpen, initialIndex]);
 
-  // Handle Image Switching - Find new active image in DOM
-  useEffect(() => {
-    if (containerRef.current) {
-       // We look for the image that matches the current index
-       const activeImg = containerRef.current.querySelector(`img[data-index="${activeIndex}"]`);
-       if (activeImg) {
-         imgRef.current = activeImg;
-         resetZoom(true);
-       }
-    }
-  }, [activeIndex]);
-
-  const updateParentIndex = (newIndex) => {
-    if (onIndexChange) onIndexChange(newIndex);
-  };
-
-  // --- TRANSFORMS ---
-  const updateTransform = useCallback((animate = false) => {
-    if (imgRef.current) {
-      const { x, y, scale } = state.current;
-      imgRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
-      imgRef.current.style.transition = animate ? 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
-    }
-  }, []);
-
-  const resetZoom = (animate = true) => {
-    state.current = { x: 0, y: 0, scale: 1, isPanning: false };
-    updateTransform(animate);
-  };
-
-  const getBoundaries = (currentScale) => {
-    if (!containerRef.current) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-    const { offsetWidth: w, offsetHeight: h } = containerRef.current;
-    const overflowX = Math.max(0, (w * currentScale - w) / 2);
-    const overflowY = Math.max(0, (h * currentScale - h) / 2);
-    return { minX: -overflowX, maxX: overflowX, minY: -overflowY, maxY: overflowY };
-  };
-
-  // --- NAVIGATION ---
-  const handleNext = useCallback(() => { 
-    setActiveIndex((p) => {
-      const next = (p + 1) % images.length;
-      updateParentIndex(next);
-      return next;
-    }); 
-  }, [images.length]);
-  
-  const handlePrev = useCallback(() => { 
-    setActiveIndex((p) => {
-      const prev = (p - 1 + images.length) % images.length;
-      updateParentIndex(prev);
-      return prev;
-    }); 
-  }, [images.length]);
-
-  // --- TOUCH HANDLERS ---
-  const onTouchStart = (e) => {
-    if (e.touches.length === 1) {
-      // Check Double Tap
-      const now = Date.now();
-      if (now - lastTap.current < 300) {
-        handleDoubleTap(e.touches[0]);
-        lastTap.current = 0;
-        return;
-      }
-      lastTap.current = now;
-
-      // Start Pan/Swipe
-      state.current.isPanning = true;
-      state.current.startX = e.touches[0].clientX;
-      state.current.startY = e.touches[0].clientY;
-      state.current.startPanX = state.current.x;
-      state.current.startPanY = state.current.y;
-
-    } else if (e.touches.length === 2) {
-      // Start Pinch
-      state.current.isPanning = true;
-      const t1 = e.touches[0];
-      const t2 = e.touches[1];
-      const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
-      state.current.startDist = dist;
-      state.current.startScale = state.current.scale;
-      
-      const rect = containerRef.current.getBoundingClientRect();
-      state.current.pinchCenter = {
-         x: (t1.clientX + t2.clientX) / 2 - (rect.left + rect.width / 2),
-         y: (t1.clientY + t2.clientY) / 2 - (rect.top + rect.height / 2)
-      };
-      state.current.startPanX = state.current.x;
-      state.current.startPanY = state.current.y;
+  // 2. Handle Scroll (Updates Index)
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const scrollLeft = scrollRef.current.scrollLeft;
+    const width = scrollRef.current.offsetWidth;
+    
+    const newIndex = Math.round(scrollLeft / width);
+    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < images.length) {
+      setActiveIndex(newIndex);
+      onIndexChange?.(newIndex);
     }
   };
 
-  const onTouchMove = (e) => {
-    if (!state.current.isPanning) return;
-    e.preventDefault(); // Stop browser scrolling inside modal
-
-    if (e.touches.length === 2) {
-      // PINCH
-      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      if (state.current.startDist === 0) return;
-      
-      const ratio = dist / state.current.startDist;
-      const newScale = Math.min(Math.max(state.current.startScale * ratio, 0.5), 8);
-      
-      const scaleRatio = newScale / state.current.startScale;
-      const moveX = state.current.pinchCenter.x - (state.current.pinchCenter.x - state.current.startPanX) * scaleRatio;
-      const moveY = state.current.pinchCenter.y - (state.current.pinchCenter.y - state.current.startPanY) * scaleRatio;
-
-      state.current.scale = newScale;
-      state.current.x = moveX;
-      state.current.y = moveY;
-      updateTransform(false);
-
-    } else if (e.touches.length === 1) {
-      // SWIPE / PAN
-      const dx = e.touches[0].clientX - state.current.startX;
-      const dy = e.touches[0].clientY - state.current.startY;
-
-      if (state.current.scale <= 1.05) { 
-         // SWIPE Logic (Horizontal only)
-         state.current.x = dx;
-         state.current.y = 0; 
-         updateTransform(false);
-      } else {
-         // PAN Logic (Free movement with boundaries)
-         let newX = state.current.startPanX + dx;
-         let newY = state.current.startPanY + dy;
-         const bounds = getBoundaries(state.current.scale);
-         
-         // Rubber banding
-         if (newX > bounds.maxX) newX = bounds.maxX + (newX - bounds.maxX) * 0.3;
-         if (newX < bounds.minX) newX = bounds.minX - (bounds.minX - newX) * 0.3;
-         if (newY > bounds.maxY) newY = bounds.maxY + (newY - bounds.maxY) * 0.3;
-         if (newY < bounds.minY) newY = bounds.minY - (bounds.minY - newY) * 0.3;
-
-         state.current.x = newX;
-         state.current.y = newY;
-         updateTransform(false);
-      }
+  const scrollToSlide = (index) => {
+    if (scrollRef.current) {
+      const width = scrollRef.current.offsetWidth;
+      scrollRef.current.scrollTo({
+        left: index * width,
+        behavior: 'smooth'
+      });
     }
-  };
-
-  const onTouchEnd = (e) => {
-    if (e.touches.length > 0) return; // Still touching with one finger
-
-    state.current.isPanning = false;
-
-    if (state.current.scale <= 1.05) {
-        // Handle Swipe Threshold
-        const swipeThreshold = 50;
-        if (state.current.x > swipeThreshold) {
-            handlePrev();
-        } else if (state.current.x < -swipeThreshold) {
-            handleNext();
-        } else {
-            resetZoom(true);
-        }
-    } else {
-        // Snap back if panned out of bounds
-        const bounds = getBoundaries(state.current.scale);
-        let targetX = state.current.x;
-        let targetY = state.current.y;
-        let needsSnap = false;
-
-        if (state.current.x > bounds.maxX) { targetX = bounds.maxX; needsSnap = true; }
-        if (state.current.x < bounds.minX) { targetX = bounds.minX; needsSnap = true; }
-        if (state.current.y > bounds.maxY) { targetY = bounds.maxY; needsSnap = true; }
-        if (state.current.y < bounds.minY) { targetY = bounds.minY; needsSnap = true; }
-
-        if (needsSnap) {
-            state.current.x = targetX;
-            state.current.y = targetY;
-            updateTransform(true);
-        }
-    }
-  };
-
-  const handleDoubleTap = (touch) => {
-    if (state.current.scale > 1.1) {
-      resetZoom(true);
-    } else {
-      // Gentle Zoom (1.5x)
-      const targetScale = 1.5; 
-      state.current = { x: 0, y: 0, scale: targetScale, isPanning: false };
-      updateTransform(true);
-    }
-  };
-
-  // Animation variants
-  const variants = {
-    enter: (direction) => ({ x: direction > 0 ? '100%' : '-100%', opacity: 0 }),
-    center: { x: 0, opacity: 1 },
-    exit: (direction) => ({ x: direction < 0 ? '100%' : '-100%', opacity: 0 })
   };
 
   return (
@@ -232,55 +53,105 @@ export const ImageZoomModal = ({ isOpen, onClose, images, initialIndex = 0, onIn
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[2000] bg-black flex flex-col items-center justify-center overflow-hidden"
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[2000] bg-black flex flex-col"
         >
+          {/* Force CSS Override: This enables Swiping! 
+              It tells the browser: "Allow Horizontal Pan (pan-x) and Pinch Zoom (pinch-zoom), 
+              but if we are zoomed in (.is-zoomed), block everything so JS handles it."
+          */}
+          <style>{`
+            .react-transform-wrapper { width: 100% !important; height: 100% !important; }
+            .react-transform-component { width: 100% !important; height: 100% !important; }
+            
+            /* KEY FIX: Allow native swipe when not zoomed */
+            .zoom-wrapper-custom { touch-action: pan-x pinch-zoom !important; }
+            
+            /* Lock swipe when zoomed in */
+            .zoom-wrapper-custom.is-zoomed { touch-action: none !important; }
+          `}</style>
+
           {/* Header */}
-          <div className="absolute top-0 w-full p-4 flex justify-between items-center z-50 pointer-events-none">
-            <span className="text-white/90 text-sm font-bold tracking-widest drop-shadow-md">
-               {activeIndex + 1} / {images.length}
+          <div className="absolute top-0 left-0 w-full p-4 flex justify-between items-center z-50 pointer-events-none">
+            <span className="text-white/90 text-sm font-medium tracking-widest drop-shadow-md">
+              {activeIndex + 1} / {images.length}
             </span>
-            <button onClick={onClose} className="pointer-events-auto p-2 bg-white/10 rounded-full text-white">
+            <button 
+              onClick={onClose} 
+              className="pointer-events-auto p-2 bg-white/10 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-colors"
+            >
               <X size={24} />
             </button>
           </div>
 
-          {/* Main Area */}
-          <div
-            ref={containerRef}
-            className="w-full h-full flex items-center justify-center relative touch-none"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
+          {/* NATIVE SCROLL CONTAINER */}
+          <div 
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className={`flex-grow flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide ${isZoomed ? 'overflow-hidden' : ''}`}
+            style={{ width: '100vw', height: '100%' }}
           >
-            <AnimatePresence initial={false} mode="popLayout">
-              <motion.div
-                key={activeIndex}
-                variants={variants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
-                className="absolute inset-0 flex items-center justify-center w-full h-full"
+            {images.map((img, index) => (
+              <div 
+                key={index} 
+                className="w-full h-full flex-shrink-0 snap-center flex items-center justify-center relative"
+                style={{ width: '100vw' }} // Force viewport width
               >
-                <img
-                  data-index={activeIndex}
-                  src={images[activeIndex]}
-                  alt="Zoom"
-                  className="max-w-full max-h-screen object-contain select-none"
-                  draggable="false"
-                  style={{ willChange: 'transform' }}
-                /> 
-              </motion.div>
-            </AnimatePresence>
+                <TransformWrapper
+                  initialScale={1}
+                  minScale={1}
+                  maxScale={4}
+                  centerOnInit={true}
+                  alignmentAnimation={{ sizeX: 0, sizeY: 0 }}
+                  doubleClick={{ mode: "toggle" }}
+                  // Disable panning when at scale 1 so browser handles swipe
+                  panning={{ disabled: !isZoomed }} 
+                  onZoom={({ state }) => setIsZoomed(state.scale > 1.01)}
+                  onZoomStop={({ state }) => setIsZoomed(state.scale > 1.01)}
+                  onTransformed={({ state }) => setIsZoomed(state.scale > 1.01)}
+                >
+                  <TransformComponent
+                    // Apply our custom classes for the touch-action fix
+                    wrapperClass={`zoom-wrapper-custom ${isZoomed ? 'is-zoomed' : ''}`}
+                    contentStyle={{ width: "100%", height: "100%" }}
+                  >
+                    <img
+                      src={img}
+                      alt={`View ${index}`}
+                      className="max-w-full max-h-screen object-contain select-none w-full h-full"
+                      draggable={false}
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
+              </div>
+            ))}
           </div>
 
-           {/* Desktop Arrows */}
-           <button onClick={handlePrev} className="absolute left-2 p-4 text-white/50 hover:text-white z-50 hidden md:block"><ChevronLeft size={32} /></button>
-           <button onClick={handleNext} className="absolute right-2 p-4 text-white/50 hover:text-white z-50 hidden md:block"><ChevronRight size={32} /></button>
+          {/* Desktop Arrows (Hidden on Mobile) */}
+          {activeIndex > 0 && (
+            <button 
+              onClick={() => scrollToSlide(activeIndex - 1)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-4 text-white/50 hover:text-white z-50 hidden md:block"
+            >
+              <ChevronLeft size={40} />
+            </button>
+          )}
+          {activeIndex < images.length - 1 && (
+            <button 
+              onClick={() => scrollToSlide(activeIndex + 1)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-4 text-white/50 hover:text-white z-50 hidden md:block"
+            >
+              <ChevronRight size={40} />
+            </button>
+          )}
 
-           <div className="absolute bottom-8 pointer-events-none text-white/40 text-[10px] font-bold tracking-[0.2em] uppercase md:hidden">
-             Double Tap to Zoom / Swipe to Navigate
-           </div>
+          {/* Mobile Hint */}
+          {!isZoomed && (
+             <div className="absolute bottom-10 w-full text-center pointer-events-none text-white/40 text-[10px] font-bold uppercase tracking-widest md:hidden">
+                Swipe • Double Tap to Zoom
+             </div>
+          )}
+
         </motion.div>
       )}
     </AnimatePresence>
