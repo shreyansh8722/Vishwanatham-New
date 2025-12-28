@@ -12,19 +12,18 @@ import { Toaster } from 'react-hot-toast';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+// FIX: Removed React.StrictMode for stable touch gestures
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <ProductProvider>
-          <LoginModalProvider>
-            <CartProvider>
-              <App />
-              <Toaster position="bottom-center" />
-            </CartProvider>
-          </LoginModalProvider>
-        </ProductProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <AuthProvider>
+      <ProductProvider>
+        <LoginModalProvider>
+          <CartProvider>
+            <App />
+            <Toaster position="bottom-center" />
+          </CartProvider>
+        </LoginModalProvider>
+      </ProductProvider>
+    </AuthProvider>
+  </BrowserRouter>
 );
