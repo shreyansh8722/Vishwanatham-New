@@ -76,17 +76,20 @@ const ProductGallery = ({ images = [] }) => {
              onScroll={handleScroll}
              onTouchStart={() => { isUserInteracting.current = true; }}
              onTouchEnd={() => { setTimeout(() => { isUserInteracting.current = false; }, 500); }}
-             className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide touch-pan-x"
+             // FIX: Removed 'touch-pan-x' here. This enables vertical scrolling/reload.
+             className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
              style={{ scrollBehavior: 'smooth' }}
            >
              {images.map((img, idx) => (
+               // RESTORED: No padding, no gaps. Exactly like original.
                <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative">
                  <img 
                    src={img} 
-                   onClick={() => setIsLightboxOpen(true)} // Opens the smooth modal on tap
+                   onClick={() => setIsLightboxOpen(true)}
+                   // RESTORED: object-cover to fill the box completely
                    className="w-full h-full object-cover active:scale-[0.98] transition-transform duration-200" 
                    alt={`View ${idx + 1}`}
-                   loading={idx === 0 ? "eager" : "lazy"} // Performance: Load first image immediately
+                   loading={idx === 0 ? "eager" : "lazy"} 
                    decoding="async"
                  />
                </div>
@@ -117,7 +120,7 @@ const ProductGallery = ({ images = [] }) => {
             src={images[selectedImage]} 
             alt="Main" 
             className="w-full h-full object-cover transition-opacity duration-300"
-            loading="eager" // Performance: Important for LCP
+            loading="eager" 
           />
           
           {/* Lens Zoom Effect */}

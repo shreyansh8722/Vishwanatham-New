@@ -1,43 +1,43 @@
 [
   {
     "id": "sua1NttMjYIGdOoqCe8L",
-    "chakra": "",
     "detailImageUrls": [
       "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766947084027_Untitled%20design%20(40).png?alt=media&token=b1b877bb-a2be-4534-b05c-44d070c757b5"
     ],
-    "createdAt": {
-      "seconds": 1766317011,
-      "nanoseconds": 696000000
-    },
-    "weight": "",
-    "origin": "Nepal",
-    "name": "5 mukhi rudraksha",
-    "planet": "",
-    "deity": "",
-    "price": 499,
-    "imageUrls": [
-      "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766943897880_Gemini_Generated_Image_bpqvm6bpqvm6bpqv%20(1).png?alt=media&token=ee1cc6af-d1c8-437c-a927-b76f4fd3216e",
-      "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766947082361_shopping%20(1).webp?alt=media&token=a6510861-9a5b-47b3-a2e8-37040f1492de"
-    ],
-    "mantra": "",
-    "mukhi": "5 mukhi",
-    "fullDescription": "Lorem Ipsumm",
-    "stock": 2,
-    "updatedAt": {
-      "seconds": 1766947086,
-      "nanoseconds": 21000000
-    },
-    "sku": "RUD-123",
     "tags_lowercase": [
       "rudraksha",
       "5 mukhi rudraksha",
       "5 mukhi"
     ],
-    "certification": "",
-    "beadSize": "",
+    "chakra": "",
     "featuredImageUrl": "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766943897880_Gemini_Generated_Image_bpqvm6bpqvm6bpqv%20(1).png?alt=media&token=ee1cc6af-d1c8-437c-a927-b76f4fd3216e",
+    "updatedAt": {
+      "seconds": 1766965299,
+      "nanoseconds": 453000000
+    },
+    "imageUrls": [
+      "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766943897880_Gemini_Generated_Image_bpqvm6bpqvm6bpqv%20(1).png?alt=media&token=ee1cc6af-d1c8-437c-a927-b76f4fd3216e",
+      "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766965297120_Gemini_Generated_Image_ortwobortwobortw.png?alt=media&token=845abccb-6a58-4a64-8772-8b70ba2f5bb8"
+    ],
+    "origin": "Nepal",
+    "beadSize": "",
+    "certification": "",
     "comparePrice": 999,
+    "createdAt": {
+      "seconds": 1766317011,
+      "nanoseconds": 696000000
+    },
+    "mantra": "",
     "description": "Lorem Ipsumm",
-    "category": "Rudraksha"
+    "category": "Rudraksha",
+    "planet": "",
+    "mukhi": "5 mukhi",
+    "name": "5 mukhi rudraksha",
+    "fullDescription": "Lorem Ipsumm",
+    "deity": "",
+    "price": 499,
+    "weight": "",
+    "sku": "RUD-123",
+    "stock": 2
   }
 ]
