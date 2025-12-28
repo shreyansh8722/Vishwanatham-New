@@ -1,0 +1,40 @@
+[
+  {
+    "id": "sua1NttMjYIGdOoqCe8L",
+    "description": "Lorem Ipsumm",
+    "mantra": "",
+    "category": "Rudraksha",
+    "certification": "",
+    "tags_lowercase": [
+      "rudraksha",
+      "5 mukhi rudraksha",
+      "5 mukhi"
+    ],
+    "origin": "Nepal",
+    "chakra": "",
+    "deity": "",
+    "comparePrice": 999,
+    "name": "5 mukhi rudraksha",
+    "planet": "",
+    "sku": "RUD-123",
+    "mukhi": "5 mukhi",
+    "weight": "",
+    "createdAt": {
+      "seconds": 1766317011,
+      "nanoseconds": 696000000
+    },
+    "updatedAt": {
+      "seconds": 1766317518,
+      "nanoseconds": 438000000
+    },
+    "fullDescription": "Lorem Ipsumm",
+    "beadSize": "",
+    "imageUrls": [
+      "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766316806802_new-1766316779721-0_compressed.webp?alt=media&token=e31ed14e-e208-4e8f-8d02-91cae02f8160",
+      "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766317515090_new-1766317513451-0.webp?alt=media&token=19397dbd-b713-4771-aeaf-186f38f8614e"
+    ],
+    "stock": 8,
+    "featuredImageUrl": "https://firebasestorage.googleapis.com/v0/b/vishwanatham-739fe.firebasestorage.app/o/products%2F1766316806802_new-1766316779721-0_compressed.webp?alt=media&token=e31ed14e-e208-4e8f-8d02-91cae02f8160",
+    "price": 499
+  }
+]

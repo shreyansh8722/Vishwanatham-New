@@ -57,55 +57,68 @@ const ShopByPurpose = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-20 bg-gray-50 border-t border-gray-100">
-      <div className="container mx-auto px-4">
+    <section className="py-24 bg-white relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         
-        {/* Header - Clean Style */}
-        <div className="text-center mb-12">
-          <h2 className="font-heading text-4xl md:text-5xl font-bold text-black">
+        {/* Header - Cleaned Up */}
+        <div className="text-center mb-16 space-y-3">
+          <h2 className="font-serif text-4xl md:text-6xl font-medium text-black">
             Shop by Purpose
           </h2>
+          <p className="text-gray-500 max-w-lg mx-auto text-sm md:text-base leading-relaxed font-light">
+            Each artifact is chosen to resonate with specific energies, helping you manifest your deepest desires.
+          </p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Masonry-style Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {purposes.map((item) => (
             <div 
               key={item.id} 
               onClick={() => navigate(item.link)}
-              className="group relative h-64 overflow-hidden rounded-sm cursor-pointer shadow-sm hover:shadow-xl transition-shadow duration-300"
+              className="group relative h-[400px] overflow-hidden cursor-pointer rounded-sm"
             >
-              {/* Background Image */}
-              <img 
-                src={item.img} 
-                alt={item.title} 
-                className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110"
-              />
+              {/* Image Layer */}
+              <div className="absolute inset-0 bg-gray-200 overflow-hidden">
+                <img 
+                  src={item.img} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                />
+              </div>
               
-              {/* Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20 group-hover:via-black/50 transition-colors" />
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
 
-              {/* Content */}
-              <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-                <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                  
-                  {/* Sanskrit Name (Hidden until hover) */}
-                  <span className="text-[10px] font-bold text-[var(--color-primary)] uppercase tracking-widest mb-1 block opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75">
-                    {item.sanskrit}
-                  </span>
-                  
-                  <h3 className="font-heading text-2xl font-bold mb-2 group-hover:text-white transition-colors">
-                    {item.title}
-                  </h3>
-                  
-                  <p className="text-sm text-gray-300 opacity-0 h-0 group-hover:opacity-100 group-hover:h-auto transition-all duration-500 delay-100 leading-relaxed max-w-[90%]">
-                    {item.description}
-                  </p>
-                  
-                  {/* Arrow Icon */}
-                  <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
-                     <ArrowRight size={14} className="text-white" />
-                  </div>
+              {/* Decorative Border (Gold Frame effect on hover) */}
+              <div className="absolute inset-4 border border-white/20 group-hover:border-[#B08D55]/60 transition-colors duration-500 z-10"></div>
+
+              {/* Content Layer */}
+              <div className="absolute inset-0 p-10 flex flex-col justify-end text-white z-20">
+                
+                {/* Sanskrit Badge */}
+                <div className="transform -translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out">
+                    <span className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-bold tracking-widest uppercase text-[#E5C580] mb-3 rounded-full">
+                        {item.sanskrit}
+                    </span>
+                </div>
+
+                {/* Title */}
+                <h3 className="font-serif text-3xl text-white mb-2 leading-tight group-hover:text-[#F3E5AB] transition-colors duration-300">
+                  {item.title}
+                </h3>
+                
+                {/* Description & Link */}
+                <div className="overflow-hidden max-h-0 group-hover:max-h-24 transition-[max-height] duration-500 ease-in-out">
+                    <p className="text-sm text-gray-300 font-light leading-relaxed mb-4 border-l-2 border-[#B08D55] pl-3">
+                        {item.description}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/80 group-hover:text-white group-hover:gap-4 transition-all">
+                        Discover Collection <ArrowRight size={14} />
+                    </div>
                 </div>
               </div>
             </div>

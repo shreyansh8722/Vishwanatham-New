@@ -1,11 +1,13 @@
 import React, { useEffect, Suspense, lazy } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom'; // Import useLocation
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 // --- EAGER COMPONENTS ---
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 import CartModal from './components/shop/CartModal';
 import { AppSkeleton } from './components/skeletons/AppSkeleton';
+// 1. IMPORT WHATSAPP BUTTON
+import WhatsAppButton from './components/common/WhatsAppButton'; 
 
 // OPTIMIZATION: Import Home Page directly
 import Home from './pages/HomePage'; 
@@ -34,7 +36,6 @@ function App() {
     <div className="flex flex-col min-h-screen font-sans bg-white text-gray-900">
       <ScrollToTop />
       
-      {/* FIX: Only show Global Navbar if NOT on checkout page */}
       {!isCheckoutPage && <Navbar />}
       
       <CartModal />
@@ -55,6 +56,9 @@ function App() {
           </Routes>
         </Suspense>
       </main>
+      
+      {/* 2. ADD WHATSAPP BUTTON GLOBALLY */}
+      <WhatsAppButton />
 
       <Footer />
     </div>

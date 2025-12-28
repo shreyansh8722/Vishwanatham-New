@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useAuth } from '@/context/AuthContext';
+// FIX: Import from hooks/useAuth instead of context/AuthContext
+import { useAuth } from '@/hooks/useAuth'; 
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { ReviewCard } from '@/components/reviews/ReviewCard';
 import { Star, MessageSquare } from 'lucide-react';
