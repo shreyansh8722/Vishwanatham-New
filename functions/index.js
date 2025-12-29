@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-const fetch = require("node-fetch");
+const fetch = require("node-fetch"); // Ensure you have this: npm install node-fetch@2
 const cors = require("cors")({ origin: true });
 
 admin.initializeApp();
@@ -16,6 +16,10 @@ const RAZORPAY_KEY_SECRET = "YOUR_RAZORPAY_KEY_SECRET";
 
 const GMAIL_EMAIL = "your-email@gmail.com"; 
 const GMAIL_APP_PASSWORD = "abcd efgh ijkl mnop"; // 16-char App Password
+
+// PROKERALA API CREDENTIALS (get these from api.prokerala.com)
+const PROKERALA_CLIENT_ID = "YOUR_PROKERALA_CLIENT_ID";
+const PROKERALA_CLIENT_SECRET = "YOUR_PROKERALA_CLIENT_SECRET";
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -50,9 +54,8 @@ exports.createOrder = functions.https.onRequest((req, res) => {
 
         // Add customization costs if any
         let itemPrice = Number(productData.price);
-        if (item.selectedOptions?.fallPico) itemPrice += 150;
-        if (item.selectedOptions?.blouseStitching) itemPrice += 1200;
-        if (item.selectedOptions?.tassels) itemPrice += 250;
+        // Add your custom logic for extra charges here if needed
+        // if (item.selectedOptions?.fallPico) itemPrice += 150;
 
         totalAmount += itemPrice * item.quantity;
 
@@ -157,8 +160,8 @@ exports.sendOrderConfirmation = functions.firestore
       <html>
       <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px;">
         <div style="border-bottom: 2px solid #B08D55; padding-bottom: 10px; margin-bottom: 20px;">
-          <h2 style="color: #B08D55; margin: 0;">PAHNAWA BANARAS</h2>
-          <p style="font-size: 12px; color: #666;">Authentic Heritage Silks</p>
+          <h2 style="color: #B08D55; margin: 0;">VISHWANATHAM</h2>
+          <p style="font-size: 12px; color: #666;">Spiritual Artifacts from Kashi</p>
         </div>
         
         <h3>Namaste ${order.shippingDetails?.firstName},</h3>
@@ -194,7 +197,7 @@ exports.sendOrderConfirmation = functions.firestore
 
     try {
       await transporter.sendMail({
-        from: `"Pahnawa Banaras" <${GMAIL_EMAIL}>`,
+        from: `"Vishwanatham Store" <${GMAIL_EMAIL}>`,
         to: order.userEmail,
         bcc: GMAIL_EMAIL, // Admin Copy
         subject: `Order Confirmed #${orderId}`,
@@ -219,9 +222,9 @@ exports.serveProduct = functions.https.onRequest(async (req, res) => {
     if (!docSnap.exists) return res.redirect('/');
     
     const product = docSnap.data();
-    const title = `${product.name} | Pahnawa Banaras`;
-    const desc = product.description ? product.description.substring(0, 150) : "Authentic Banarasi Silk";
-    const image = product.featuredImageUrl || "https://pahnawabanaras.com/og-image.jpg";
+    const title = `${product.name} | Vishwanatham`;
+    const desc = product.description ? product.description.substring(0, 150) : "Authentic Spiritual Artifacts";
+    const image = product.featuredImageUrl || "https://vishwanatham.com/og-image.jpg";
 
     // Fetch the live index.html
     const hostingUrl = `https://${process.env.GCLOUD_PROJECT}.web.app/index.html`;
@@ -243,4 +246,63 @@ exports.serveProduct = functions.https.onRequest(async (req, res) => {
     console.error("SEO Error:", error);
     res.redirect('/');
   }
+});
+
+// --- 5. ASTROLOGY: FETCH RASHI (Prokerala Proxy) ---
+exports.getHoroscope = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      // 1. Validate Input
+      const { datetime, coordinates } = req.body; // coordinates: "lat,long"
+      if (!datetime || !coordinates) {
+         throw new Error("Missing datetime or coordinates");
+      }
+
+      // 2. Get Access Token (OAuth2 Client Credentials Flow)
+      const tokenResponse = await fetch("https://api.prokerala.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          grant_type: "client_credentials",
+          client_id: PROKERALA_CLIENT_ID,
+          client_secret: PROKERALA_CLIENT_SECRET,
+        }),
+      });
+
+      const tokenData = await tokenResponse.json();
+      if (!tokenData.access_token) {
+         throw new Error("Failed to authenticate with Prokerala");
+      }
+
+      // 3. Fetch Planet Positions (Cheaper endpoint that gives Rashi/Moon Sign)
+      const astroResponse = await fetch(`https://api.prokerala.com/v2/astrology/planet-position?ayanamsa=1&coordinates=${coordinates}&datetime=${datetime}`, {
+        headers: { "Authorization": `Bearer ${tokenData.access_token}` },
+      });
+
+      const astroData = await astroResponse.json();
+      
+      // 4. Extract Moon Sign (Rashi)
+      // The API returns a list of planets. We need the one named "Moon".
+      const moonData = astroData.data.find(p => p.name === "Moon");
+      
+      if (!moonData) throw new Error("Moon data not found in response");
+
+      // Prokerala returns "Mesha", "Vrishabha" etc.
+      // We map these to our English keys if needed, or send both.
+      const rashiName = moonData.rasi; 
+      const rashiEnglish = moonData.rasi_en; // e.g. "Aries"
+
+      res.status(200).json({ 
+        success: true, 
+        data: { 
+           sign: rashiEnglish, // Use English name to match our RASHI_MAPPING keys (Aries, etc.)
+           details: moonData 
+        } 
+      });
+
+    } catch (error) {
+      console.error("Astrology API Error:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
 });

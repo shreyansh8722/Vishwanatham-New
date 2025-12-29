@@ -3,18 +3,23 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import ProductCard from '../components/shop/ProductCard';
 import FilterSidebar from '../components/shop/FilterSidebar';
-import { Filter, ChevronRight, Loader2, X } from 'lucide-react';
+import RashiFinderModal from '../components/shop/RashiFinderModal'; // IMPORTED
+import { RASHI_MAPPING } from '../data/rashiMapping'; // IMPORTED
+import { Filter, ChevronRight, Loader2, X, Sparkles } from 'lucide-react';
 
 const ShopPage = () => {
   const [searchParams] = useSearchParams();
   const { products, loading } = useProducts();
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
+  
+  // NEW: Rashi State
+  const [isRashiModalOpen, setIsRashiModalOpen] = useState(false);
+  const [selectedRashi, setSelectedRashi] = useState(null);
 
   // --- FILTER STATE ---
-  // We lift the state up here so we can filter the products array
   const [filters, setFilters] = useState({
-    priceRange: [0, 50000], // Default range
+    priceRange: [0, 50000],
     categories: [],
     materials: [],
     purposes: []
@@ -26,12 +31,11 @@ const ShopPage = () => {
     if (categoryParam) {
       setFilters(prev => ({ ...prev, categories: [categoryParam] }));
     } else {
-      // If no URL param, reset category filter (optional, depends on UX preference)
       setFilters(prev => ({ ...prev, categories: [] }));
     }
   }, [searchParams]);
 
-  // 2. FILTERING LOGIC
+  // 2. FILTERING LOGIC (Updated with Rashi)
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       // A. Price Check
@@ -42,7 +46,6 @@ const ShopPage = () => {
 
       // B. Category Check
       if (filters.categories.length > 0) {
-        // Loose check: "Rudraksha" matches "Rudraksha Beads" or "Indonesian Rudraksha"
         const productCat = product.category?.toLowerCase() || '';
         const hasMatch = filters.categories.some(cat => productCat.includes(cat.toLowerCase()));
         if (!hasMatch) return false;
@@ -54,10 +57,21 @@ const ShopPage = () => {
         const hasMatch = filters.materials.some(mat => productMat.includes(mat.toLowerCase()));
         if (!hasMatch) return false;
       }
+      
+      // D. NEW: Rashi Filter Check
+      if (selectedRashi) {
+         const mapping = RASHI_MAPPING[selectedRashi];
+         if (mapping && mapping.keywords) {
+            // Check if product matches ANY keyword for this Rashi
+            const prodText = (product.name + " " + product.description + " " + product.category).toLowerCase();
+            const hasKeywordMatch = mapping.keywords.some(k => prodText.includes(k.toLowerCase()));
+            if (!hasKeywordMatch) return false;
+         }
+      }
 
       return true;
     });
-  }, [products, filters]);
+  }, [products, filters, selectedRashi]); // Added selectedRashi dependency
 
   // 3. SORTING LOGIC
   const sortedProducts = useMemo(() => {
@@ -65,7 +79,7 @@ const ShopPage = () => {
        if (sortBy === 'price-low') return Number(a.price) - Number(b.price);
        if (sortBy === 'price-high') return Number(b.price) - Number(a.price);
        if (sortBy === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
-       return 0; // Featured (Default)
+       return 0; 
     });
   }, [filteredProducts, sortBy]);
 
@@ -74,7 +88,6 @@ const ShopPage = () => {
      setFilters(prev => {
         const current = prev[section];
         const isSelected = current.includes(value);
-        
         if (isSelected) {
            return { ...prev, [section]: current.filter(item => item !== value) };
         } else {
@@ -94,6 +107,7 @@ const ShopPage = () => {
       materials: [],
       purposes: []
     });
+    setSelectedRashi(null); // Clear Rashi too
   };
 
   if (loading) {
@@ -103,22 +117,60 @@ const ShopPage = () => {
   return (
     <div className="bg-white min-h-screen font-sans text-gray-900 pb-20">
       
+      {/* RASHI MODAL COMPONENT */}
+      <RashiFinderModal 
+         isOpen={isRashiModalOpen} 
+         onClose={() => setIsRashiModalOpen(false)}
+         onRashiSelected={(rashi) => setSelectedRashi(rashi)}
+      />
+
       {/* HEADER */}
-      <div className="bg-gray-50 border-b border-gray-100">
+      <div className="bg-[#F9F7F2] border-b border-[#E6D5B8]">
          <div className="container mx-auto px-4 py-8 md:py-12">
             <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 tracking-widest uppercase mb-6">
                <Link to="/" className="hover:text-[#B08D55] transition-colors">Home</Link> 
                <ChevronRight size={10} />
                <span className="text-gray-900">Shop</span>
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-               Spiritual Artifacts
-            </h1>
-            <p className="text-gray-500 max-w-2xl text-sm leading-relaxed">
-               Showing {sortedProducts.length} authentic items for your spiritual journey.
-            </p>
+            
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+               <div>
+                  <h1 className="font-serif text-4xl md:text-5xl font-bold text-[#2E4F3E] mb-3">
+                     Spiritual Artifacts
+                  </h1>
+                  <p className="text-gray-600 max-w-2xl text-sm leading-relaxed">
+                     Showing {sortedProducts.length} authentic items for your spiritual journey.
+                  </p>
+               </div>
+
+               {/* NEW: Shop By Rashi Button */}
+               <button 
+                  onClick={() => setIsRashiModalOpen(true)}
+                  className="bg-[#B08D55] text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-[#B08D55]/20 hover:bg-[#967645] hover:-translate-y-1 transition-all flex items-center gap-2 text-sm"
+               >
+                  <Sparkles size={18} fill="currentColor" /> Shop by Rashi
+               </button>
+            </div>
          </div>
       </div>
+
+      {/* ACTIVE RASHI BADGE */}
+      {selectedRashi && (
+         <div className="container mx-auto px-4 mt-6">
+            <div className="bg-[#1F362A] text-white p-4 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+               <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">🕉️</div>
+                  <div>
+                     <p className="text-[10px] uppercase tracking-widest opacity-80">Recommended for</p>
+                     <p className="font-serif font-bold text-lg leading-none">{selectedRashi} ({RASHI_MAPPING[selectedRashi]?.indianName})</p>
+                  </div>
+               </div>
+               <button onClick={() => setSelectedRashi(null)} className="text-xs font-bold underline hover:text-[#B08D55]">
+                  Remove
+               </button>
+            </div>
+         </div>
+      )}
 
       {/* CONTENT */}
       <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
@@ -175,8 +227,9 @@ const ShopPage = () => {
             ) : (
                <div className="py-20 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200">
                   <h3 className="font-serif text-xl text-gray-400 mb-2">No artifacts found</h3>
+                  <p className="text-sm text-gray-500 mb-4">Try adjusting your filters or search criteria.</p>
                   <button onClick={clearFilters} className="text-[#B08D55] font-bold text-xs uppercase tracking-widest hover:underline">
-                     Clear Filters
+                     Clear All Filters
                   </button>
                </div>
             )}
